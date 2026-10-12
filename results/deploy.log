@@ -1,0 +1,12 @@
+15:02:31 [deploy] nginx started on :8080
+15:02:31 [deploy] deploying v1 to blue (active=none)
+15:02:32 [deploy] switched traffic to blue
+15:02:33 [deploy] deploy v1 OK, active=blue
+15:02:34 [deploy] deploying v2 to green (active=blue)
+15:02:35 [deploy] switched traffic to green
+15:02:36 [deploy] deploy v2 OK, active=green
+15:02:39 [deploy] deploying v3 to blue (active=green)
+15:02:44 [deploy] PRE-SWITCH health check FAILED for blue/v3 -> rollback (traffic never moved)
+15:02:44 [deploy] deploying v4 to blue (active=green)
+15:02:45 [deploy] switched traffic to blue
+15:02:47 [deploy] deploy v4 OK, active=blue

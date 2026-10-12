@@ -1,0 +1,8 @@
+PASS v1 deployed to blue
+PASS v2 switched to green
+{"requests": 501, "errors": 0, "versions": {"v1": 131, "v2": 370}}
+PASS zero failed requests during switch
+PASS broken v3 exits non-zero
+PASS traffic still on green/v2
+PASS last_result=rollback
+PASS v4 to blue after rollback
