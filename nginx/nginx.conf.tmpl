@@ -1,0 +1,19 @@
+# Rendered by scripts/deploy.sh. __PREFIX__ is the runtime dir.
+worker_processes 1;
+pid __PREFIX__/nginx.pid;
+error_log __PREFIX__/error.log;
+events { worker_connections 256; }
+http {
+  access_log __PREFIX__/access.log;
+  client_body_temp_path __PREFIX__/tmp; proxy_temp_path __PREFIX__/tmp;
+  fastcgi_temp_path __PREFIX__/tmp; uwsgi_temp_path __PREFIX__/tmp; scgi_temp_path __PREFIX__/tmp;
+  include __PREFIX__/upstream_active.conf;   # the ONLY thing a switch changes
+  server {
+    listen __LB_PORT__;
+    location / {
+      proxy_pass http://app_active;
+      proxy_next_upstream error timeout http_502;
+      add_header X-Upstream $upstream_addr always;
+    }
+  }
+}
