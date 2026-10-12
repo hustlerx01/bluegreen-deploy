@@ -33,7 +33,7 @@ MODE=docker scripts/deploy.sh <tag>      # containers instead of local processes
 scripts/teardown.sh
 ```
 
-## Results (actual run, 2026-10-11, lab box, nginx 1.26.3, MODE=local)
+## Results (actual run, 2026-10-11, lab machine, nginx 1.26.3, MODE=local)
 `results/e2e.log`, `results/deploy.log`, `results/pytest.log`:
 
 | Scenario | Outcome |
@@ -44,7 +44,7 @@ scripts/teardown.sh
 | v4 after rollback | PASS: switched to blue |
 | pytest | **3 passed** (2 unit + e2e) |
 
-**Not run:** `MODE=docker` and the GitHub Actions workflow, because the box has no Docker daemon. The local-process mode exercises the same Nginx switch and rollback logic.
+**Not run:** `MODE=docker` and the GitHub Actions workflow, because my lab machine has no Docker daemon. The local-process mode exercises the same Nginx switch and rollback logic.
 
 **Bugs I hit and fixed:** (1) In bash, `(cd dir && cmd &)` backgrounds the whole `&&` list, so `$!` was the subshell's PID and `kill` left uvicorn orphaned holding the port. The next deploy then failed to bind, and the health check "correctly" failed for the wrong reason. (2) The first deploy marked blue active before anything was running.
 
