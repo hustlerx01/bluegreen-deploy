@@ -1,0 +1,31 @@
+name: blue-green
+on:
+  push: {branches: [main]}
+  workflow_dispatch:
+    inputs:
+      fail_health: {description: "Simulate broken release", type: boolean, default: false}
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: sudo apt-get update && sudo apt-get install -y nginx
+      - run: pip install -r requirements-dev.txt
+      - run: PATH=/usr/sbin:$PATH pytest -q          # includes local-mode e2e incl. rollback
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest   # stand-in for a self-hosted runner on the target VM
+    env: {MODE: docker}
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y nginx
+      - name: Build image
+        run: docker build -t orders:${{ github.sha }} --build-arg APP_VERSION=${{ github.sha }} app
+      - name: Deploy previous good (baseline)
+        run: docker tag orders:${{ github.sha }} orders:baseline && PATH=/usr/sbin:$PATH scripts/deploy.sh baseline || true
+      - name: Blue-green deploy (auto-rollback on failed health check)
+        run: PATH=/usr/sbin:$PATH scripts/deploy.sh ${{ github.sha }} ${{ inputs.fail_health && '--fail-health' || '' }}
+      - if: always()
+        run: cat .bg/deploy.log; PATH=/usr/sbin:$PATH scripts/teardown.sh

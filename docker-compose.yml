@@ -1,0 +1,10 @@
+# Static compose view of the topology (deploy.sh MODE=docker drives the real switch).
+services:
+  blue:
+    build: {context: app, args: {APP_VERSION: v1}}
+    environment: {APP_COLOR: blue}
+    ports: ["127.0.0.1:8001:8000"]
+  green:
+    build: {context: app, args: {APP_VERSION: v2}}
+    environment: {APP_COLOR: green}
+    ports: ["127.0.0.1:8002:8000"]
